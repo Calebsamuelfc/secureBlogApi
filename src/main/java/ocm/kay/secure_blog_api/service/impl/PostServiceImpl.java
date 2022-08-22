@@ -67,5 +67,6 @@ public class PostServiceImpl implements PostService {
                 .description(postDto.getDescription())
                 .title(postDto.getTitle())
                 .build();
+
     }
 }
