@@ -6,15 +6,18 @@ import ocm.kay.secure_blog_api.entity.Post;
 import ocm.kay.secure_blog_api.exceptions.ResourceNotFoundException;
 import ocm.kay.secure_blog_api.repository.PostRepository;
 import ocm.kay.secure_blog_api.service.PostService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
-    private PostRepository postRepository;
+    private final PostRepository postRepository;
 
 
     @Override
@@ -25,9 +28,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getAllPosts() {
-        List<Post> posts = postRepository.findAll();
-        return posts.stream().map(post -> convertToDto(post)).collect(Collectors.toList());
+    public List<PostDto> getAllPosts(int pageNo, int pageSize) {
+        PageRequest pageable = PageRequest.of(pageNo,pageSize);
+        Page<Post> posts = postRepository.findAll(pageable);
+        List<Post> postList = posts.getContent();
+
+        return postList.stream().map(post -> convertToDto(post)).collect(Collectors.toList());
     }
 
     @Override
