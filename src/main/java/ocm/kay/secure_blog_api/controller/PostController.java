@@ -13,7 +13,7 @@ import java.util.List;
 @RequestMapping("api/posts")
 @RequiredArgsConstructor
 public class PostController {
-    private PostService postService;
+    private final PostService postService;
 
 
     @PostMapping
@@ -22,8 +22,11 @@ public class PostController {
     }
 
     @GetMapping
-    public List<PostDto> getAllPosts(){
-        return postService.getAllPosts();
+    public List<PostDto> getAllPosts(
+            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize
+    ){
+        return postService.getAllPosts(pageNo,pageSize);
     }
     @GetMapping("/{id}")
     public ResponseEntity<PostDto> getPostById(@PathVariable(name = "id") Long id){
