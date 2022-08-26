@@ -1,26 +1,17 @@
-package ocm.kay.secure_blog_api.entity;
+package ocm.kay.secure_blog_api.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-
-
-@Builder
-@Data
 @AllArgsConstructor
+@Data
 @NoArgsConstructor
-@Entity
-public class Comment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+@Builder
+public class CommentDto {
     private Long id;
     private String name;
     private String email;
     private String body;
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Post post;
-
 }
