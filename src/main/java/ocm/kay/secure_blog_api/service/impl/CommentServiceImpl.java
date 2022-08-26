@@ -9,6 +9,7 @@ import ocm.kay.secure_blog_api.exceptions.ResourceNotFoundException;
 import ocm.kay.secure_blog_api.repository.CommentRepository;
 import ocm.kay.secure_blog_api.repository.PostRepository;
 import ocm.kay.secure_blog_api.service.CommentService;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final ModelMapper modelMapper;
 
     @Override
     public CommentDto createComment(long postId, CommentDto commentDto) {
@@ -74,18 +76,20 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private CommentDto convertToDto(Comment comment){
-        return CommentDto.builder()
-                .id(comment.getId())
-                .body(comment.getBody())
-                .email(comment.getEmail())
-                .name(comment.getName())
-                .build();
+        return modelMapper.map(comment,CommentDto.class);
+//        return CommentDto.builder()
+//                .id(comment.getId())
+//                .body(comment.getBody())
+//                .email(comment.getEmail())
+//                .name(comment.getName())
+//                .build();
     }
     private Comment convertToEntity(CommentDto commentDto){
-        return Comment.builder()
-                .body(commentDto.getBody())
-                .email(commentDto.getEmail())
-                .name(commentDto.getName())
-                .build();
+        return modelMapper.map(commentDto,Comment.class);
+//        return Comment.builder()
+//                .body(commentDto.getBody())
+//                .email(commentDto.getEmail())
+//                .name(commentDto.getName())
+//                .build();
     }
 }

@@ -7,6 +7,7 @@ import ocm.kay.secure_blog_api.entity.Post;
 import ocm.kay.secure_blog_api.exceptions.ResourceNotFoundException;
 import ocm.kay.secure_blog_api.repository.PostRepository;
 import ocm.kay.secure_blog_api.service.PostService;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
+    private final ModelMapper modelMapper;
 
 
     @Override
@@ -71,18 +73,20 @@ public class PostServiceImpl implements PostService {
 
 
     private PostDto convertToDto(Post post){
-        return PostDto.builder()
-                .content(post.getContent())
-                .description(post.getDescription())
-                .id(post.getId())
-                .title(post.getTitle())
-                .build();
+        return modelMapper.map(post,PostDto.class);
+//        return PostDto.builder()
+//                .content(post.getContent())
+//                .description(post.getDescription())
+//                .id(post.getId())
+//                .title(post.getTitle())
+//                .build();
     }
     private Post convertToEntity(PostDto postDto){
-        return Post.builder()
-                .content(postDto.getContent())
-                .description(postDto.getDescription())
-                .title(postDto.getTitle())
-                .build();
+        return modelMapper.map(postDto,Post.class);
+//        return Post.builder()
+//                .content(postDto.getContent())
+//                .description(postDto.getDescription())
+//                .title(postDto.getTitle())
+//                .build();
     }
 }
