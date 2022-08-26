@@ -2,12 +2,14 @@ package ocm.kay.secure_blog_api.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import ocm.kay.secure_blog_api.dto.PostDto;
+import ocm.kay.secure_blog_api.dto.PostResponse;
 import ocm.kay.secure_blog_api.entity.Post;
 import ocm.kay.secure_blog_api.exceptions.ResourceNotFoundException;
 import ocm.kay.secure_blog_api.repository.PostRepository;
 import ocm.kay.secure_blog_api.service.PostService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.awt.print.Pageable;
@@ -28,12 +30,21 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getAllPosts(int pageNo, int pageSize) {
-        PageRequest pageable = PageRequest.of(pageNo,pageSize);
+    public PostResponse getAllPosts(int pageNo, int pageSize, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        PageRequest pageable = PageRequest.of(pageNo,pageSize, sort);
         Page<Post> posts = postRepository.findAll(pageable);
         List<Post> postList = posts.getContent();
 
-        return postList.stream().map(post -> convertToDto(post)).collect(Collectors.toList());
+        List<PostDto> content = postList.stream().map(post -> convertToDto(post)).collect(Collectors.toList());
+        return PostResponse.builder()
+                .content(content)
+                .pageNo(posts.getNumber())
+                .pageSize(posts.getSize())
+                .totalElements(posts.getTotalElements())
+                .totalPages(posts.getTotalPages())
+                .last(posts.isLast())
+                .build();
     }
 
     @Override
