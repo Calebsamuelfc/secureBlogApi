@@ -5,16 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
 @Builder
-public class PostDto {
+public class CommentDto {
     private Long id;
-    private String title;
-    private String description;
-    private String content;
-    private Set<CommentDto> comments;
+    private String name;
+    private String email;
+    private String body;
 }

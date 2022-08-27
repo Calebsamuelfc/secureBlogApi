@@ -2,19 +2,26 @@ package ocm.kay.secure_blog_api.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import ocm.kay.secure_blog_api.dto.PostDto;
+import ocm.kay.secure_blog_api.dto.PostResponse;
 import ocm.kay.secure_blog_api.entity.Post;
 import ocm.kay.secure_blog_api.exceptions.ResourceNotFoundException;
 import ocm.kay.secure_blog_api.repository.PostRepository;
 import ocm.kay.secure_blog_api.service.PostService;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
-    private PostRepository postRepository;
+    private final PostRepository postRepository;
+    private final ModelMapper modelMapper;
 
 
     @Override
@@ -25,9 +32,21 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getAllPosts() {
-        List<Post> posts = postRepository.findAll();
-        return posts.stream().map(post -> convertToDto(post)).collect(Collectors.toList());
+    public PostResponse getAllPosts(int pageNo, int pageSize, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        PageRequest pageable = PageRequest.of(pageNo,pageSize, sort);
+        Page<Post> posts = postRepository.findAll(pageable);
+        List<Post> postList = posts.getContent();
+
+        List<PostDto> content = postList.stream().map(post -> convertToDto(post)).collect(Collectors.toList());
+        return PostResponse.builder()
+                .content(content)
+                .pageNo(posts.getNumber())
+                .pageSize(posts.getSize())
+                .totalElements(posts.getTotalElements())
+                .totalPages(posts.getTotalPages())
+                .last(posts.isLast())
+                .build();
     }
 
     @Override
@@ -54,18 +73,20 @@ public class PostServiceImpl implements PostService {
 
 
     private PostDto convertToDto(Post post){
-        return PostDto.builder()
-                .content(post.getContent())
-                .description(post.getDescription())
-                .id(post.getId())
-                .title(post.getTitle())
-                .build();
+        return modelMapper.map(post,PostDto.class);
+//        return PostDto.builder()
+//                .content(post.getContent())
+//                .description(post.getDescription())
+//                .id(post.getId())
+//                .title(post.getTitle())
+//                .build();
     }
     private Post convertToEntity(PostDto postDto){
-        return Post.builder()
-                .content(postDto.getContent())
-                .description(postDto.getDescription())
-                .title(postDto.getTitle())
-                .build();
+        return modelMapper.map(postDto,Post.class);
+//        return Post.builder()
+//                .content(postDto.getContent())
+//                .description(postDto.getDescription())
+//                .title(postDto.getTitle())
+//                .build();
     }
 }
