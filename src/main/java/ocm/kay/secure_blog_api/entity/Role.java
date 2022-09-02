@@ -1,10 +1,8 @@
 package ocm.kay.secure_blog_api.entity;
 
 import lombok.*;
-import ocm.kay.secure_blog_api.dto.CommentDto;
 
 import javax.persistence.*;
-
 
 @Builder
 @Setter
@@ -12,14 +10,11 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Comment {
+public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+    @Column(length = 60)
     private String name;
-    private String email;
-    private String body;
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Post post;
-
+//    private AppUser appUser;
 }

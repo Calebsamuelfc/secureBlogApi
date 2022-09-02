@@ -7,6 +7,7 @@ import ocm.kay.secure_blog_api.service.PostService;
 import ocm.kay.secure_blog_api.utils.AppConstants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -20,7 +21,7 @@ import static ocm.kay.secure_blog_api.utils.AppConstants.*;
 public class PostController {
     private final PostService postService;
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto){
         return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
@@ -39,10 +40,12 @@ public class PostController {
     public ResponseEntity<PostDto> getPostById(@PathVariable(name = "id") Long id){
         return ResponseEntity.ok(postService.getPostById(id));
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<PostDto> updatePost (@Valid @PathVariable(name = "id") Long id, @Valid @RequestBody PostDto postDto){
         return new ResponseEntity<>(postService.updatePost(postDto,id), HttpStatus.OK);
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePost (@PathVariable(name = "id") Long id){
         postService.deletePost(id);
