@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 import static ocm.kay.secure_blog_api.utils.AppConstants.*;
@@ -21,7 +22,7 @@ public class PostController {
 
 
     @PostMapping
-    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto){
+    public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto){
         return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
     }
 
@@ -39,7 +40,7 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostById(id));
     }
     @PutMapping("/{id}")
-    public ResponseEntity<PostDto> updatePost (@PathVariable(name = "id") Long id, @RequestBody PostDto postDto){
+    public ResponseEntity<PostDto> updatePost (@Valid @PathVariable(name = "id") Long id, @Valid @RequestBody PostDto postDto){
         return new ResponseEntity<>(postService.updatePost(postDto,id), HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
