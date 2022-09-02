@@ -6,6 +6,7 @@ import ocm.kay.secure_blog_api.entity.AppUser;
 import ocm.kay.secure_blog_api.entity.Role;
 import ocm.kay.secure_blog_api.repository.RoleRepository;
 import ocm.kay.secure_blog_api.repository.UserRepository;
+import ocm.kay.secure_blog_api.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,13 +28,8 @@ public class AuthController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
-
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private AuthService authService;
 
     @PostMapping("/login")
     public ResponseEntity<String> authenticateUser(@RequestBody LoginDto loginDto){
@@ -42,25 +38,15 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return new ResponseEntity<>("User login successful", HttpStatus.OK);
     }
-    @PostMapping("/signup")
+    @PostMapping("/user/signup")
     public ResponseEntity<String> registerUser (@RequestBody SignUpDto signUpDto){
-        if(userRepository.existsByUserName(signUpDto.getUserName())){
-            return new ResponseEntity<>("Username is already taken", HttpStatus.BAD_REQUEST);
-        }
-        if(userRepository.existsByEmail(signUpDto.getEmail())){
-            return new ResponseEntity<>("Email already exists", HttpStatus.BAD_REQUEST);
-        }
-        AppUser user = AppUser.builder()
-                .userName(signUpDto.getUserName())
-                .email(signUpDto.getEmail())
-                .name(signUpDto.getName())
-                .password(passwordEncoder.encode(signUpDto.getPassword()))
-                .build();
+        authService.registerUser(signUpDto);
+        return new ResponseEntity<>("User signup successful", HttpStatus.OK);
+    }
 
-        Role roles = roleRepository.findByName("ROLE_ADMIN").get();
-        user.setRoles(Collections.singleton(roles));
-        userRepository.save(user);
-
+    @PostMapping("/admin/signup")
+    public ResponseEntity<String> registerAdmin (@RequestBody SignUpDto signUpDto){
+        authService.registerUser(signUpDto);
         return new ResponseEntity<>("User signup successful", HttpStatus.OK);
     }
 
